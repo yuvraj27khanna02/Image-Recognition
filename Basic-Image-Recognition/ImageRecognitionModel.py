@@ -2,7 +2,7 @@ from fastai.vision.all import *
 import pandas as pd
 
 IMAGE_PIXEL_COUNT = 224
-EPOCH_VALUE = 5
+EPOCH_VALUE = 3
 
 def GetLabel(fileName: str):
     return fileName.split("-")[0]
@@ -23,26 +23,26 @@ for img in get_image_files(Food_database_path):
     if label1 in str(img):
         img.rename(f"{img.parent}/{label1}-{img.name}")
     
-    elif label2 in str(img):
-        img.rename(f"{img.parent}/{label2}-{img.name}")
+    # elif label2 in str(img):
+    #     img.rename(f"{img.parent}/{label2}-{img.name}")
     
     elif label3 in str(img):
         img.rename(f"{img.parent}/{label3}-{img.name}")
     
-    elif label4 in str(img):
-        img.rename(f"{img.parent}/{label4}-{img.name}")
+    # elif label4 in str(img):
+    #     img.rename(f"{img.parent}/{label4}-{img.name}")
     
-    elif label5 in str(img):
-        img.rename(f"{img.parent}/{label5}-{img.name}")
+    # elif label5 in str(img):
+    #     img.rename(f"{img.parent}/{label5}-{img.name}")
     
     elif label6 in str(img):
         img.rename(f"{img.parent}/{label6}-{img.name}")
     
-    elif label7 in str(img):
-        img.rename(f"{img.parent}/{label7}-{img.name}")
+    # elif label7 in str(img):
+    #     img.rename(f"{img.parent}/{label7}-{img.name}")
     
-    elif label8 in str(img):
-        img.rename(f"{img.parent}/{label8}-{img.name}")
+    # elif label8 in str(img):
+    #     img.rename(f"{img.parent}/{label8}-{img.name}")
     
     else:
         os.remove(img)
@@ -74,4 +74,6 @@ if export_model_input.lower() == "y":
     food_Model_Path = get_files(Food_database_path, ".pkl")[0]
     # To load model
     food_model_info = load_learner(food_Model_Path)
+    print(f"Food model is stored as: {food_Model_Path}")
+    print(f"Food model info: {food_model_info}")
 
