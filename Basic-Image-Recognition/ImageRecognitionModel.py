@@ -1,51 +1,35 @@
 from fastai.vision.all import *
 import pandas as pd
+from ImageRecognitionModelDefinitions import *
+import pickle
 
-IMAGE_PIXEL_COUNT = 224
-EPOCH_VALUE = 3
-
-def GetLabel(fileName: str):
-    return fileName.split("-")[0]
+VERBOSE = True
+IMAGE_PIXEL_COUNT = 12
+EPOCH_VALUE = 2
 
 Food_database_path = untar_data(URLs.FOOD)
+food_database_names = all_food_names()
+if VERBOSE == True:
+    print("Database imported 1/6")
+    print(f"                           CHECK     \n{food_database_names}")
 
-label1 = "ramen"
-label2 = "nachos"
-label3 = "pizza"
-label4 = "ice_cream"
-label5 = "fried_rice"
-label6 = "baklava"
-label7 = "dumplings"
-label8 = "samosa"
+for food_img in get_image_files(Food_database_path):
 
-for img in get_image_files(Food_database_path):
-
-    if label1 in str(img):
-        img.rename(f"{img.parent}/{label1}-{img.name}")
-    
-    # elif label2 in str(img):
-    #     img.rename(f"{img.parent}/{label2}-{img.name}")
-    
-    elif label3 in str(img):
-        img.rename(f"{img.parent}/{label3}-{img.name}")
-    
-    # elif label4 in str(img):
-    #     img.rename(f"{img.parent}/{label4}-{img.name}")
-    
-    # elif label5 in str(img):
-    #     img.rename(f"{img.parent}/{label5}-{img.name}")
-    
-    elif label6 in str(img):
-        img.rename(f"{img.parent}/{label6}-{img.name}")
-    
-    # elif label7 in str(img):
-    #     img.rename(f"{img.parent}/{label7}-{img.name}")
-    
-    # elif label8 in str(img):
-    #     img.rename(f"{img.parent}/{label8}-{img.name}")
-    
+    if (any(food_name in str(food_img) for food_name in food_database_names)):
+        # valid food_name is in food_img
+        food_img.rename(rename_food_img(str(food_img)))
     else:
-        os.remove(img)
+        # food_img is not of food
+        food_img.rename(str("Not Food"))
+        
+
+for food_name in food_database_names:
+    for food_img in get_image_files(Food_database_path):
+        if food_name in str(food_img):
+            food_img.rename(str(food_name))
+            break
+if VERBOSE == True:
+    print("Images named changd 2/6")
 
 # Loading images into model
 
@@ -55,15 +39,22 @@ Food_dls = ImageDataLoaders.from_name_func(Food_database_path,
                                            see=2705,
                                            label_func=GetLabel,
                                            item_tfms=Resize(IMAGE_PIXEL_COUNT))
+if VERBOSE == True:
+    print("Images loaded 3/6")
 
 Food_model = cnn_learner(Food_dls ,resnet34, metrics=error_rate, pretrained=True)
+if VERBOSE == True:
+    print("Model trained 4/6")
 
 Food_model.fine_tune(epochs=EPOCH_VALUE)
+if VERBOSE == True:
+    print("Model fine tuned 5/6")
 
 # Confusion Matrix
 
 Food_model_interpretation = ClassificationInterpretation.from_learner(Food_model)
 Food_model_interpretation.plot_confusion_matrix()
+print(Food_model_interpretation) 
 
 # Deploying model
 
@@ -77,3 +68,8 @@ if export_model_input.lower() == "y":
     print(f"Food model is stored as: {food_Model_Path}")
     print(f"Food model info: {food_model_info}")
 
+# Downloading model
+
+shutil.move("food-101/export(v2).pkl", "./")
+if VERBOSE == True:
+    print("model exported 6/6")
