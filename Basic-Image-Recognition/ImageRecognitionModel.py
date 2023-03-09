@@ -8,26 +8,18 @@ IMAGE_PIXEL_COUNT = 12
 EPOCH_VALUE = 2
 
 Food_database_path = untar_data(URLs.FOOD)
-food_database_names = all_food_names()
 if VERBOSE == True:
     print("Database imported 1/6")
-    print(f"                           CHECK     \n{food_database_names}")
+    print(f"            Length of database is {len(get_image_files(Food_database_path))}")
 
 for food_img in get_image_files(Food_database_path):
-
-    if (any(food_name in str(food_img) for food_name in food_database_names)):
+    if (any(food_name in str(food_img) for food_name in all_food_names())):
         # valid food_name is in food_img
         food_img.rename(rename_food_img(str(food_img)))
     else:
         # food_img is not of food
-        food_img.rename(str("Not Food"))
+        os.remove(food_img)
         
-
-for food_name in food_database_names:
-    for food_img in get_image_files(Food_database_path):
-        if food_name in str(food_img):
-            food_img.rename(str(food_name))
-            break
 if VERBOSE == True:
     print("Images named changd 2/6")
 
